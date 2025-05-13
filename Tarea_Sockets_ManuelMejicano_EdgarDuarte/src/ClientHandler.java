@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
-        private final Socket socket;
+       private final Socket socket;
 
         ClientHandler(Socket socket) {
             this.socket = socket;
@@ -16,9 +16,11 @@ public class ClientHandler implements Runnable {
             System.out.println("Cliente conectado: " + socket.getInetAddress());
             try (
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true, java.nio.charset.StandardCharsets.UTF_8)) {
 
-                out.println("¡Bienvenido! Escribe tus mensajes (escribe 'bye' para salir).\n");
+                // Enviar mensaje de bienvenida
+                out.println("¡Bienvenido! Escribe tus mensajes (escribe 'bye' para salir).  ");
+
                 String message;
                 while ((message = in.readLine()) != null) {
                     System.out.println("Cliente dice: " + message);
@@ -26,7 +28,6 @@ public class ClientHandler implements Runnable {
                         out.println("¡Adiós! Hasta luego.");
                         break;
                     }
-                    // Lógica simple de "IA"
                     String response = processMessage(message);
                     out.println(response);
                     System.out.println("Servidor responde: " + response);
@@ -50,7 +51,6 @@ public class ClientHandler implements Runnable {
                 return "La hora actual del servidor es: " + java.time.LocalTime.now();
             }
             if (lower.matches(".*\\d+\\s*\\+\\s*\\d+.*")) {
-                // Ejemplo sencillo: sumar dos números
                 String[] parts = lower.split("\\+");
                 try {
                     int a = Integer.parseInt(parts[0].trim());
@@ -60,7 +60,6 @@ public class ClientHandler implements Runnable {
                     return "No pude calcular la suma. Asegúrate de usar 'num1 + num2'.";
                 }
             }
-            // Por defecto: eco del mensaje
             return "Eco: " + msg;
         }
     }
